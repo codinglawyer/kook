@@ -2,11 +2,26 @@
 
 let str = ReasonReact.stringToElement;
 
+type recipes = List;
+
+let recipes = ["Chilli Beed Letuce Wraps", "Chilli Con Carne", "Lasagna", "Putanesca"];
+
 module RecipeList ={
   let component = ReasonReact.statelessComponent("RecipeList");
   let make = (_children) => {
     ...component,
-    render: (_self) => <div>(str("Recipe List"))</div>
+    render: (_self) =>
+      <div>
+      (
+        ReasonReact.arrayToElement(
+          Array.of_list(
+            (
+              List.map((recipe) => <div>(str(recipe))</div>, recipes)
+            )
+          )
+        )
+      )
+        </div>
   }
 };
 
