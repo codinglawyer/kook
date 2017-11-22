@@ -50,21 +50,21 @@ module RecipeList = {
     ...component,
     render: (_self) =>
       <div>
-      (
-        ReasonReact.arrayToElement(
-          Array.of_list(
-            (
-              List.map((recipe) =>
-                <div>
-                  <div>(str("Name:" ++ recipe.name))</div>
-                  <div>(str("Ingredients:" ++ recipe.ingredients))</div>
-                </div>
-                ,recipes)
+        (
+          ReasonReact.arrayToElement(
+            Array.of_list(
+              (
+                List.map((recipe) =>
+                  <div>
+                    <div>(str("Name:" ++ recipe.name))</div>
+                    <div>(str("Ingredients:" ++ recipe.ingredients))</div>
+                  </div>
+                  ,recipes)
+              )
             )
           )
         )
-      )
-        </div>
+      </div>
   }
 };
 
