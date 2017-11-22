@@ -39,6 +39,11 @@ module Form = {
       }
 };
 
+type recipe = {
+  name: string,
+  ingredients: string
+};
+
 module RecipeList = {
   let component = ReasonReact.statelessComponent("RecipeList");
   let make = (~recipes, _children) => {
@@ -49,7 +54,12 @@ module RecipeList = {
         ReasonReact.arrayToElement(
           Array.of_list(
             (
-              List.map((recipe) => <div>(str(recipe))</div>, recipes)
+              List.map((recipe) =>
+                <div>
+                  <div>(str("Name:" ++ recipe.name))</div>
+                  <div>(str("Ingredients:" ++ recipe.ingredients))</div>
+                </div>
+                ,recipes)
             )
           )
         )
@@ -58,7 +68,9 @@ module RecipeList = {
   }
 };
 
-type state = {items: list(string)};
+
+
+type state = {items: list(recipe)};
 type action =
   | SaveInput(string);
 
@@ -68,10 +80,10 @@ let component = ReasonReact.reducerComponent("App");
 
 let make = (_children) => {
   ...component,
-  initialState: () => {items: ["Chilli Beed Lettuce Wraps", "Chilli Con Carne", "Lasagna", "Putanesca"]},
+  initialState: () => {items: [{name: "Chilli Beed Lettuce Wraps", ingredients: "beef"}]},
   reducer: (action, state) =>
     switch action{
-    | SaveInput(input) => ReasonReact.Update({items: [input, ...state.items]})
+    | SaveInput(input) => ReasonReact.Update({items: [{name: input, ingredients: "meat"}, ...state.items]})
     },
   render: (self) =>
     <div>
