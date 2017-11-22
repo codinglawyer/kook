@@ -10,15 +10,18 @@ module Input = {
     ...component,
     initialState: () => "",
     reducer: (text, _state) => ReasonReact.Update(text),
-    render: (self) => <input
-      onChange=(self.reduce((evt) => getValueFromEvent(evt)))
-      onKeyDown=((evt) =>
-      if (ReactEventRe.Keyboard.key(evt) == "Enter") {
-        onSubmit(self.state);
-        (self.reduce(() => ""))()
-      })
-    />
-  }
+    render: (self) =>
+      <input
+        onChange=(self.reduce((evt) => getValueFromEvent(evt)))
+        onKeyDown=(
+          (evt) =>
+            if (ReactEventRe.Keyboard.key(evt) == "Enter") {
+              onSubmit(self.state);
+              (self.reduce(() => ""))()
+            }
+        )
+      />
+  };
 };
 
 module Form = {
@@ -27,16 +30,10 @@ module Form = {
     ...component,
     render: (_self) =>
       <div>
-        <div>
-          <div>(str("Title"))</div>
-          <Input onSubmit/>
-        </div>
-        <div>
-          <div>(str("Ingredients"))</div>
-          <Input onSubmit/>
-        </div>
+        <div> <div> (str("Title")) </div> <Input onSubmit /> </div>
+        <div> <div> (str("Ingredients")) </div> <Input onSubmit /> </div>
       </div>
-      }
+  };
 };
 
 type recipe = {
@@ -53,45 +50,43 @@ module RecipeList = {
         (
           ReasonReact.arrayToElement(
             Array.of_list(
-              (
-                List.map((recipe) =>
+              List.map(
+                (recipe) =>
                   <div>
-                    <div>(str("Name:" ++ recipe.name))</div>
-                    <div>(str("Ingredients:" ++ recipe.ingredients))</div>
-                  </div>
-                  ,recipes)
+                    <div> (str("Name:" ++ recipe.name)) </div>
+                    <div> (str("Ingredients:" ++ recipe.ingredients)) </div>
+                  </div>,
+                recipes
               )
             )
           )
         )
       </div>
-  }
+  };
 };
 
-
-
 type state = {items: list(recipe)};
+
 type action =
   | SaveInput(string);
 
 let component = ReasonReact.reducerComponent("App");
 
-
-
 let make = (_children) => {
   ...component,
   initialState: () => {items: [{name: "Chilli Beed Lettuce Wraps", ingredients: "beef"}]},
   reducer: (action, state) =>
-    switch action{
-    | SaveInput(input) => ReasonReact.Update({items: [{name: input, ingredients: "meat"}, ...state.items]})
+    switch action {
+    | SaveInput(input) =>
+      ReasonReact.Update({items: [{name: input, ingredients: "meat"}, ...state.items]})
     },
   render: (self) =>
     <div>
       <div className="titleContainer">
-        <div className="title">(str("Kook"))</div>
-        <div className="subtitle">(str("Your best cooking friend"))</div>
+        <div className="title"> (str("Kook")) </div>
+        <div className="subtitle"> (str("Your best cooking friend")) </div>
       </div>
-      <Form onSubmit=(self.reduce((text) => SaveInput(text)))/>
-      <RecipeList recipes=(self.state.items) />
+      <Form onSubmit=(self.reduce((text) => SaveInput(text))) />
+      <RecipeList recipes=self.state.items />
     </div>
 };
