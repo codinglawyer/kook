@@ -5,33 +5,49 @@ let str = ReasonReact.stringToElement;
 let getValueFromEvent = (event) => ReactDOMRe.domElementToObj(ReactEventRe.Form.target(event))##value;
 
 module Input = {
-  let component = ReasonReact.reducerComponent("Input");
-  let make = (~onSubmit, _children) => {
-    ...component,
-    initialState: () => "",
-    reducer: (text, _state) => ReasonReact.Update(text),
-    render: (self) =>
-      <input
-        onChange=(self.reduce((evt) => getValueFromEvent(evt)))
-        onKeyDown=(
-          (evt) =>
-            if (ReactEventRe.Keyboard.key(evt) == "Enter") {
-              onSubmit(self.state);
-              (self.reduce(() => ""))()
-            }
-        )
-      />
-  };
-};
-
-module Form = {
-  let component = ReasonReact.statelessComponent("Form");
-  let make = (~onSubmit, _children) => {
+  let component = ReasonReact.statelessComponent("Input");
+  let make = (~save,_children) => {
     ...component,
     render: (_self) =>
       <div>
-        <div> <div> (str("Title")) </div> <Input onSubmit /> </div>
-        <div> <div> (str("Ingredients")) </div> <Input onSubmit /> </div>
+        <input
+          onChange=((evt) => {
+            /* if (ReactEventRe.Keyboard.key(evt) == "Enter") { */
+              save(getValueFromEvent(evt))
+            /* } */
+          })
+        />
+      </div>
+  };
+};
+
+type recip = {
+  name: string,
+  ingredients: string
+};
+
+
+
+module Form = {
+  type state = recip;
+
+  type action =
+    | SaveName(string);
+
+  let component = ReasonReact.reducerComponent("Form");
+  let make = (~onSubmit, _children) => {
+    ...component,
+    initialState: () => {name: "Name", ingredients: "ingredient" },
+    reducer: (action, state) =>
+      switch action {
+      | SaveName(text) => ReasonReact.Update({name: text, ingredients: state.ingredients})
+    },
+    render: (self) =>
+      <div>
+        <div> <div> (str("Title")) </div> <Input save=(self.reduce((text) => SaveName(text))) /> </div>
+        <div> <div> (str("Ingredients")) </div> <Input save=((x) => x) /> </div>
+        <button onClick=((_) => Js.log(self.state))
+        > (str("Save recipe")) </button>
       </div>
   };
 };
