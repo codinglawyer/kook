@@ -11,43 +11,8 @@ module Input = {
     render: (_self) =>
       <div>
         <input
-          onChange=((evt) => {
-            /* if (ReactEventRe.Keyboard.key(evt) == "Enter") { */
-              save(getValueFromEvent(evt))
-            /* } */
-          })
+          onChange=((evt) => save(getValueFromEvent(evt)))
         />
-      </div>
-  };
-};
-
-type recip = {
-  name: string,
-  ingredients: string
-};
-
-
-
-module Form = {
-  type state = recip;
-
-  type action =
-    | SaveName(string);
-
-  let component = ReasonReact.reducerComponent("Form");
-  let make = (~onSubmit, _children) => {
-    ...component,
-    initialState: () => {name: "Name", ingredients: "ingredient" },
-    reducer: (action, state) =>
-      switch action {
-      | SaveName(text) => ReasonReact.Update({name: text, ingredients: state.ingredients})
-    },
-    render: (self) =>
-      <div>
-        <div> <div> (str("Title")) </div> <Input save=(self.reduce((text) => SaveName(text))) /> </div>
-        <div> <div> (str("Ingredients")) </div> <Input save=((x) => x) /> </div>
-        <button onClick=((_) => Js.log(self.state))
-        > (str("Save recipe")) </button>
       </div>
   };
 };
@@ -56,6 +21,35 @@ type recipe = {
   name: string,
   ingredients: string
 };
+
+
+module Form = {
+  type state = recipe;
+
+  type action =
+    | SaveNameInput(string)
+    | SaveIngredientInput(string);
+
+  let component = ReasonReact.reducerComponent("Form");
+  let make = (~onSubmit, _children) => {
+    ...component,
+    initialState: () => {name: "Name", ingredients: "ingredient" },
+    reducer: (action, state) =>
+      switch action {
+      | SaveNameInput(text) => ReasonReact.Update({name: text, ingredients: state.ingredients})
+      | SaveIngredientInput(ingr) => ReasonReact.Update({name: state.name, ingredients: ingr})
+    },
+    render: (self) =>
+      <div>
+        <div> <div> (str("Title")) </div> <Input save=(self.reduce((text) => SaveNameInput(text))) /> </div>
+        <div> <div> (str("Ingredients")) </div> <Input save=(self.reduce((ingr) => SaveIngredientInput(ingr))) /> </div>
+        <button onClick=((_) => onSubmit(self.state))
+        > (str("Save recipe")) </button>
+      </div>
+  };
+};
+
+
 
 module RecipeList = {
   let component = ReasonReact.statelessComponent("RecipeList");
@@ -81,10 +75,12 @@ module RecipeList = {
   };
 };
 
+
+
 type state = {items: list(recipe)};
 
 type action =
-  | SaveInput(string);
+  | SaveInput(recipe);
 
 let component = ReasonReact.reducerComponent("App");
 
@@ -93,8 +89,8 @@ let make = (_children) => {
   initialState: () => {items: [{name: "Chilli Beed Lettuce Wraps", ingredients: "beef"}]},
   reducer: (action, state) =>
     switch action {
-    | SaveInput(input) =>
-      ReasonReact.Update({items: [{name: input, ingredients: "meat"}, ...state.items]})
+    | SaveInput(recipe) =>
+      ReasonReact.Update({items: [recipe, ...state.items]})
     },
   render: (self) =>
     <div>
@@ -102,7 +98,7 @@ let make = (_children) => {
         <div className="title"> (str("Kook")) </div>
         <div className="subtitle"> (str("Your best cooking friend")) </div>
       </div>
-      <Form onSubmit=(self.reduce((text) => SaveInput(text))) />
+      <Form onSubmit=(self.reduce((recipe) => SaveInput(recipe))) />
       <RecipeList recipes=self.state.items />
     </div>
 };
