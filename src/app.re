@@ -51,6 +51,7 @@ module Form = {
         <div> <div> (str("Ingredients")) </div> <Input value={self.state.ingredients} save=(self.reduce((ingr) => SaveIngredientInput(ingr))) /> </div>
         <button onClick=((_) =>{
           onSubmit(self.state);
+          (self.reduce((__) => ClearForm("")))()
        } )
         >
         (str("click"))
