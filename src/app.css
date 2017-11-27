@@ -1,3 +1,7 @@
+body{
+  margin: 20px !important;
+}
+
 .titleContainer{
   text-align: center;
 }
