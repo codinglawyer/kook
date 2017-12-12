@@ -68,7 +68,7 @@ module Form = {
             ReasonReact.arrayToElement(
               Array.of_list(
                 List.map(
-                  (ingr) =>
+                  (ingr: ingredient) =>
                     <Input
                       placeholder="Enter an ingredient name"
                       value=ingr.name
@@ -111,7 +111,7 @@ module RecipeList = {
     ...component,
     render: (_self) =>
       <div>
-        /* (
+        (
           ReasonReact.arrayToElement(
             Array.of_list(
               List.map(
@@ -122,7 +122,7 @@ module RecipeList = {
                     (
                       ReasonReact.arrayToElement(
                         Array.of_list(
-                          List.map((ingr) => <div> (str(ingr.name)) </div>, recipe.ingredients)
+                          List.map((ingr: ingredient) => <div> (str(ingr.name)) </div>, recipe.ingredients)
                         )
                       )
                     )
@@ -131,7 +131,7 @@ module RecipeList = {
               )
             )
           )
-        ) */
+        )
       </div>
   };
 };
