@@ -7,12 +7,12 @@ let getValueFromEvent = (event) => ReactDOMRe.domElementToObj(ReactEventRe.Form.
 module Input = {
   type state = string;
   let component = ReasonReact.reducerComponent("Input");
-  let make = (~save, ~value, _children) => {
+  let make = (~save, ~value, ~placeholder, _children) => {
     ...component,
     initialState: () => "",
     reducer: (text, _s) => ReasonReact.Update(text),
     render: (_self) =>
-      <div> <input value onChange=((evt) => save(getValueFromEvent(evt))) /> </div>
+      <div> <input placeholder value onChange=((evt) => save(getValueFromEvent(evt))) /> </div>
   };
 };
 
@@ -21,17 +21,19 @@ type recipe = {
   ingredients: list(string)
 };
 
+/* create AddIngredientButton - it will add a new ingredient input */
 module Form = {
   type state = recipe;
   type action =
     | SaveNameInput(string)
     | SaveIngredientInput(string)
-    | ClearForm(string);
+    | ClearForm(string)
+    | AddIngredientByOne(int);
   /* Form component - contains two input elements*/
   let component = ReasonReact.reducerComponent("Form");
   let make = (~onSubmit, _children) => {
     ...component,
-    initialState: () => {name: "Name", ingredients: ["ingredient"]},
+    initialState: () => {name: "", ingredients: []},
     reducer: (action, state) =>
       switch action {
       | SaveNameInput(text) =>
@@ -39,6 +41,8 @@ module Form = {
         ReasonReact.Update({name: text, ingredients: state.ingredients})
       | SaveIngredientInput(ingr) =>
         ReasonReact.Update({name: state.name, ingredients: [ingr, ...state.ingredients]})
+      | AddIngredientByOne(num) =>
+        ReasonReact.Update({name: state.name, ingredients: ["", ...state.ingredients]})
       | ClearForm(text) =>
         Js.log(text);
         ReasonReact.Update({name: text, ingredients: []})
@@ -47,31 +51,41 @@ module Form = {
       <div>
         <div>
           <div> (str("Title")) </div>
-          <Input value=self.state.name save=(self.reduce((text) => SaveNameInput(text))) />
+          <Input
+            placeholder="Enter a title"
+            value=self.state.name
+            save=(self.reduce((text) => SaveNameInput(text)))
+          />
         </div>
         <div>
-
-            <div> (str("Ingredients")) </div>
-            (
-              ReasonReact.arrayToElement(
-                Array.of_list(
-                  List.map(
-                    (ingr) =>
-                      <Input value=ingr save=(self.reduce((ingr) => SaveIngredientInput(ingr))) />,
-                    self.state.ingredients
-                  )
+          <div> (str("Ingredients")) </div>
+          (
+            ReasonReact.arrayToElement(
+              Array.of_list(
+                List.map(
+                  (ingr) =>
+                    <Input
+                      placeholder="Enter an ingredient name"
+                      value=ingr
+                      save=(self.reduce((ingr) => SaveIngredientInput(ingr)))
+                    />,
+                  self.state.ingredients
                 )
               )
             )
-          </div>
-          /* <Input
-               value=self.state.ingredients
-               save=(self.reduce((ingr) => SaveIngredientInput(ingr)))
-             />
-             <Input
-               value=self.state.ingredients
-               save=(self.reduce((ingr) => SaveIngredientInput(ingr)))
-             /> */
+          )
+        </div>
+        /* <Input
+             value=self.state.ingredients
+             save=(self.reduce((ingr) => SaveIngredientInput(ingr)))
+           />
+           <Input
+             value=self.state.ingredients
+             save=(self.reduce((ingr) => SaveIngredientInput(ingr)))
+           /> */
+        <button onClick=(self.reduce((_) => AddIngredientByOne(1)))>
+          (str("Add new ingredient"))
+        </button>
         <button
           onClick=(
             (_) => {
@@ -101,7 +115,9 @@ module RecipeList = {
                     <div> (str("Ingredients:")) </div>
                     (
                       ReasonReact.arrayToElement(
-                        Array.of_list(List.map((ingr) => <div> (str(ingr)) </div>, recipe.ingredients))
+                        Array.of_list(
+                          List.map((ingr) => <div> (str(ingr)) </div>, recipe.ingredients)
+                        )
                       )
                     )
                   </div>,
