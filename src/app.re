@@ -22,8 +22,16 @@ type ingredient = {
 };
 
 type recipe = {
-  name: string,
+  id: int,
+  title: string,
   ingredients: list(ingredient)
+};
+
+let lastId = ref(0);
+
+let newRecipe = (text) => {
+  lastId := lastId^ + 1;
+  {id: lastId^, title: text, ingredients: []}
 };
 
 /* create AddIngredientButton - it will add a new ingredient input */
@@ -33,24 +41,27 @@ module Form = {
     | SaveNameInput(string)
     | SaveIngredientInput(string)
     | ClearForm(string)
-    | AddIngredientByOne(int);
+    | AddIngredientByOne(int)
+    | CreateNewRecipe(string);
   /* Form component - contains two input elements*/
   let component = ReasonReact.reducerComponent("Form");
   let make = (~onSubmit, _children) => {
     ...component,
-    initialState: () => {name: "", ingredients: [{name: "asdsa", id: 2}]},
+    initialState: () => newRecipe(""),
     reducer: (action, state) =>
       switch action {
       | SaveNameInput(text) =>
-        Js.log(text);
-        ReasonReact.Update({name: text, ingredients: state.ingredients})
+      Js.log(state.id);
+        ReasonReact.Update({id: state.id, title: text, ingredients: state.ingredients})
       | SaveIngredientInput(ingr) =>
-        ReasonReact.Update({name: state.name, ingredients: [{name: ingr, id: 2}, ...state.ingredients]})
+        ReasonReact.Update({id: state.id, title: state.title, ingredients: [{name: ingr, id: 2}, ...state.ingredients]})
       | AddIngredientByOne(num) =>
-        ReasonReact.Update({name: state.name, ingredients: [{name: "", id:3}, ...state.ingredients]})
+        ReasonReact.Update({id: state.id, title: state.title, ingredients: [{name: "", id:3}, ...state.ingredients]})
       | ClearForm(text) =>
         Js.log(text);
-        ReasonReact.Update({name: text, ingredients: []})
+        ReasonReact.Update({id: state.id, title: text, ingredients: []})
+      | CreateNewRecipe(text) =>
+        ReasonReact.Update(newRecipe(""))
       },
     render: (self) =>
       <div>
@@ -58,7 +69,7 @@ module Form = {
           <div> (str("Title")) </div>
           <Input
             placeholder="Enter a title"
-            value=self.state.name
+            value=self.state.title
             save=(self.reduce((text) => SaveNameInput(text)))
           />
         </div>
@@ -96,7 +107,7 @@ module Form = {
             (_) => {
               Js.log(self.state.ingredients);
               onSubmit(self.state);
-              (self.reduce((__) => ClearForm("")))()
+              (self.reduce((__) => CreateNewRecipe("s")))()
             }
           )>
           (str("click"))
@@ -117,7 +128,7 @@ module RecipeList = {
               List.map(
                 (recipe) =>
                   <div>
-                    <div> (str("Name:" ++ recipe.name)) </div>
+                    <div> (str("Name:" ++ recipe.title)) </div>
                     <div> (str("Ingredients:")) </div>
                     (
                       ReasonReact.arrayToElement(
@@ -146,7 +157,7 @@ let component = ReasonReact.reducerComponent("App");
 let make = (_children) => {
   ...component,
   initialState: () => {
-    items: [{name: "Chilli Beed Lettuce Wraps", ingredients: [{id: 1, name: "beef"}]}]
+    items: [{id: 2, title: "Chilli Beed Lettuce Wraps", ingredients: [{id: 1, name: "beef"}]}]
   },
   reducer: (action, state) =>
     switch action {
