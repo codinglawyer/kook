@@ -1,22 +1,12 @@
 [%bs.raw {|require('./app.css')|}];
 
+open Input;
+
 let str = ReasonReact.stringToElement;
 
 let getValueFromEvent = (event) : string => ReactDOMRe.domElementToObj(
                                               ReactEventRe.Form.target(event)
                                             )##value;
-
-module Input = {
-  type state = string;
-  let component = ReasonReact.reducerComponent("Input");
-  let make = (~save, ~value, ~placeholder, _children) => {
-    ...component,
-    initialState: () => "",
-    reducer: (text, _s) => ReasonReact.Update(text),
-    render: (_self) =>
-      <div> <input placeholder value onChange=((evt) => save(getValueFromEvent(evt))) /> </div>
-  };
-};
 
 type ingredient = {
   id: int,
