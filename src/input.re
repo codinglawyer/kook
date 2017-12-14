@@ -1,7 +1,4 @@
-let getValueFromEvent = (event) : string => ReactDOMRe.domElementToObj(
-  ReactEventRe.Form.target(event)
-)##value;
-
+open Utils;
 
 module Input = {
   type state = string;

@@ -4,10 +4,6 @@ open Input;
 
 let str = ReasonReact.stringToElement;
 
-let getValueFromEvent = (event) : string => ReactDOMRe.domElementToObj(
-                                              ReactEventRe.Form.target(event)
-                                            )##value;
-
 type ingredient = {
   id: int,
   name: string
