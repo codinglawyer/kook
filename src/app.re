@@ -1,6 +1,6 @@
 [%bs.raw {|require('./app.css')|}];
 
-open Form;
+open RecipeForm;
 
 open RecipeList;
 
@@ -8,39 +8,35 @@ open Utils;
 
 open RecipeData;
 
-
-type state = {items: list(recipe)};
+type state = {recipes: list(recipe)};
 
 type action =
-  | SaveInput(recipe);
+  | SaveRecipe(recipe);
 
 let component = ReasonReact.reducerComponent("App");
 
 let make = (_children) => {
   ...component,
   initialState: () => {
-    items: [{id: 2, title: "Chilli Beed Lettuce Wraps", ingredients: [{id: 1, name: "beef"}]}]
+    recipes: [
+      {
+        id: (-1),
+        title: "Chilli Beed Lettuce Wraps",
+        ingredients: [{id: (-1), name: "Minced beef and pork"}]
+      }
+    ]
   },
   reducer: (action, state) =>
     switch action {
-    | SaveInput(recipe) => ReasonReact.Update({items: [recipe, ...state.items]})
+    | SaveRecipe(recipe) => ReasonReact.Update({recipes: [recipe, ...state.recipes]})
     },
-  render: (self) =>
+  render: ({reduce, state}) =>
     <div>
       <div className="titleContainer">
-        <div className="title"> (str("Kook")) </div>
-        <div className="subtitle"> (str("Your best cooking friend")) </div>
+        <div className="title"> (toString("Kook")) </div>
+        <div className="subtitle"> (toString("Your best cooking friend")) </div>
       </div>
-      <Form
-        onSubmit=(
-          self.reduce(
-            (recipe) => {
-              Js.log(self.state);
-              SaveInput(recipe)
-            }
-          )
-        )
-      />
-      <RecipeList recipes=self.state.items />
+      <Form onSubmit=(reduce((recipe) => SaveRecipe(recipe))) />
+      <RecipeList recipes=state.recipes />
     </div>
 };

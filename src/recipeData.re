@@ -11,14 +11,14 @@ type recipe = {
 
 let lastRecipeId = ref(0);
 
-let newRecipe = (text) => {
+let createRecipe = title => {
   lastRecipeId := lastRecipeId^ + 1;
-  {id: lastRecipeId^, title: text, ingredients: []}
+  {id: lastRecipeId^, title, ingredients: []}
 };
 
-let lastIngrId = ref(0);
+let lastIngredientId = ref(0);
 
-let newIngr = (text) => {
-  lastIngrId := lastIngrId^ + 1;
-  {id: lastIngrId^, name: text}
+let createIngredient = name => {
+  lastIngredientId := lastIngredientId^ + 1;
+  {id: lastIngredientId^, name}
 };

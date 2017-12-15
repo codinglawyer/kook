@@ -1,4 +1,5 @@
 open Utils;
+
 open RecipeData;
 
 module RecipeList = {
@@ -12,15 +13,15 @@ module RecipeList = {
             Array.of_list(
               List.map(
                 (recipe) =>
-                  <div>
-                    <div> (str("Name:" ++ recipe.title)) </div>
-                    <div> (str("Ingredients:")) </div>
+                  <div key=(string_of_int(recipe.id))>
+                    <div> (toString("Name:" ++ recipe.title)) </div>
+                    <div> (toString("Ingredients:")) </div>
                     (
                       ReasonReact.arrayToElement(
                         Array.of_list(
                           List.map(
                             (ingr: ingredient) =>
-                              <div key=(string_of_int(ingr.id))> (str(ingr.name)) </div>,
+                              <div key=(string_of_int(ingr.id))> (toString(ingr.name)) </div>,
                             recipe.ingredients
                           )
                         )
